@@ -24,6 +24,7 @@ func newImg(path string) *Img {
 
 	height := imgo.GetImageHeight(img) // 获取 图片 高度[height]
 	width := imgo.GetImageWidth(img)   // 获取 图片 宽度[width]
+	// fmt.Printf("%s w: %d h: %d\n", path, width, height)
 	imgMatrix := imgo.MustRead(path)   // 读取图片RGBA值
 	color := make([][]int, height)
 	for i := range color {
@@ -48,18 +49,19 @@ func (bigImg *Img) include(smallImg *Img, offsetX int, offsetY int) (error, int,
 	for h := 0; h < bigImg.h; h++ {
 		for w := 0; w < bigImg.w; w++ {
 			same = true
-			for y := 0; y < smallImg.h; y += offsetY {
-				if h+y >= bigImg.h {
+			for y := 0; y < smallImg.h ; y += offsetY {
+				if same == false || h+y >= bigImg.h {
 					same = false
 					break
 				}
-				for x := 0; x < smallImg.w; x += offsetX {
-					if w+x >= bigImg.w {
+				for x := 0; x < smallImg.w && same; x += offsetX {
+					if same == false ||  w+x >= bigImg.w {
 						same = false
 						break
 					}
 					if bigImg.rgb[h+y][w+x] != smallImg.rgb[y][x] {
 						same = false
+						break
 					}
 				}
 			}
@@ -104,5 +106,5 @@ func main() {
 		dc.Stroke()
 		dc.SavePNG("./draw.png")
 	}
-	fmt.Printf("%d %d\n", sx+smallImg.w/2, sy+smallImg.h/2)
+	fmt.Printf("%d %d\n", sx+(smallImg.w/2), sy+(smallImg.h/2))
 }
